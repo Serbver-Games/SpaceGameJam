@@ -3,22 +3,30 @@ extends Area2D
 signal hit
 
 export var speed =.1 # How fast the player will move (pixels/sec).
+export var rotspeed =.01 # How fast player will rotate.
 var screen_size # Size of the game window
 var direction
 
 onready var position2D = $Position2D
 var velocity = Vector2.ZERO
 var input = Vector2.ZERO
-var mouse_position2D
+var last_mouse_position2D = Vector2.ZERO
+var delta_mouseX
 
 func _ready():
 	screen_size = get_viewport_rect().size
 	hide()
 
 func _process(delta):
-	look_at(get_global_mouse_position())
+	#look_at(get_global_mouse_position())
+	var mouse_position2D = get_global_mouse_position()
+	delta_mouseX = mouse_position2D.x - last_mouse_position2D.x
+	last_mouse_position2D = mouse_position2D
 	
 	input = Vector2.ZERO # The player's movement vector.
+	
+	rotate(delta_mouseX * rotspeed)
+		
 	if Input.is_action_pressed("move_right"):
 		input = Vector2(0, speed).rotated(rotation)
 	if Input.is_action_pressed("move_left"):
