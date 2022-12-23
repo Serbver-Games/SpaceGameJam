@@ -2,31 +2,34 @@ extends Area2D
 
 signal hit
 
-export var speed =1 # How fast the player will move (pixels/sec).
+export var speed =.1 # How fast the player will move (pixels/sec).
 var screen_size # Size of the game window
 var direction
 
 onready var position2D = $Position2D
-onready var velocity = Vector2.ZERO
+var velocity = Vector2.ZERO
+var input = Vector2.ZERO
+var mouse_position2D
 
 func _ready():
 	screen_size = get_viewport_rect().size
 	hide()
 
-
 func _process(delta):
-	var input = Vector2.ZERO # The player's movement vector.
+	look_at(get_global_mouse_position())
+	
+	input = Vector2.ZERO # The player's movement vector.
 	if Input.is_action_pressed("move_right"):
-		input.x += 1
+		input = Vector2(0, speed).rotated(rotation)
 	if Input.is_action_pressed("move_left"):
-		input.x -= 1
+		input = Vector2(0, -speed).rotated(rotation)
 	if Input.is_action_pressed("move_down"):
-		input.y += 1
+		input = Vector2(-speed, 0).rotated(rotation)
 	if Input.is_action_pressed("move_up"):
-		input.y -= 1
+		input = Vector2(speed, 0).rotated(rotation)
 
 	if input.length() > 0:
-		velocity += input.normalized() * speed
+		velocity += input.normalized()
 		$AnimatedSprite.play()
 	else:
 		$AnimatedSprite.stop()
@@ -35,20 +38,22 @@ func _process(delta):
 	position.x = clamp(position.x, 0, screen_size.x)
 	position.y = clamp(position.y, 0, screen_size.y)
 
-	if input.x != 0:
-		$AnimatedSprite.animation = "right"
-		$AnimatedSprite.flip_h = true
-		$AnimatedSprite.flip_h = input.x < 0
-	elif input.y != 0:
-		$AnimatedSprite.animation = "up"
-		$AnimatedSprite.flip_v = input.y > 0
-	elif input.y == 400:
-		print(input.x)
-		$AnimatedSprite.flip_v = true
-		$AnimatedSprite.flip_v = input.y > 0
+#	if input.x != 0:
+#		$AnimatedSprite.animation = "right"
+#		$AnimatedSprite.flip_h = true
+#		$AnimatedSprite.flip_h = input.x < 0
+#	elif input.y != 0:
+#		$AnimatedSprite.animation = "up"
+#		$AnimatedSprite.flip_v = input.y > 0
+#	elif input.y == 400:
+#		print(input.x)
+#		$AnimatedSprite.flip_v = true
+#		$AnimatedSprite.flip_v = input.y > 0
 
 func start(pos):
 	position = pos
+	velocity = Vector2.ZERO
+	input = Vector2.ZERO
 	show()
 	$CollisionShape2D.disabled = false
 
