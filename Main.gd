@@ -7,6 +7,7 @@ func _ready():
 	randomize()
 
 
+
 func game_over():
 	$ScoreTimer.stop()
 	$MobTimer.stop()
@@ -16,6 +17,7 @@ func game_over():
 
 
 func new_game():
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	get_tree().call_group("mobs", "queue_free")
 	score = 0
 	$Player.start($StartPosition.position)
